@@ -1,0 +1,17 @@
+﻿<Window x:Class="MidiPlayerWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MidiPlayerWpf"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Button Height="50" Width="100" Click="StartGeneratingButton_Click" Margin="310,118,390,266">Start generating</Button>
+        <Button Height="50" Width="100" Click="StopGeneratingButton_Click" Margin="456,118,244,266">Stop generating</Button>
+        <ListBox Name="HistogramInputList" Width="200" Margin="52,22,548,17"/>
+        <ListBox Name="ModeInputList" Width="200" Margin="590,22,10,303"/>
+        <Slider Name="DensityInputSlider" Height="50" Width="200" Margin="506,317,94,67" Minimum="1" Maximum="10" Value="1" IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
+        <CheckBox Name="ResetCheckbox" Height="20" Width="50" Margin="375,292,375,92">Reset</CheckBox>
+    </Grid>
+</Window>

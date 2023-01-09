@@ -1,0 +1,41 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "Playground/1.0.0": {
+        "dependencies": {
+          "Melanchall.DryWetMidi": "6.1.2"
+        },
+        "runtime": {
+          "Playground.dll": {}
+        }
+      },
+      "Melanchall.DryWetMidi/6.1.2": {
+        "runtime": {
+          "lib/netstandard2.0/Melanchall.DryWetMidi.dll": {
+            "assemblyVersion": "6.1.2.0",
+            "fileVersion": "6.1.2.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Playground/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Melanchall.DryWetMidi/6.1.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-O4K4RA/Kq/ixDuUgyX240Ecd48mhHTBYU44090K51l6hEEVtlkXOiP7i6LoNgHD3msULk+eAdjaCZ6SHP2glGg==",
+      "path": "melanchall.drywetmidi/6.1.2",
+      "hashPath": "melanchall.drywetmidi.6.1.2.nupkg.sha512"
+    }
+  }
+}

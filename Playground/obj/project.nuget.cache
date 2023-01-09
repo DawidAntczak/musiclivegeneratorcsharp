@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "+oCPWkOZuGkiQcqjBehwZbEoI8G+jgXa085RPTaeFp4sUhw6iedtOJnMJf5JAHAulFw/LiwVJ8zVNGCBQ29LxA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Dawid\\source\\repos\\MidiPlayer\\Playground\\Playground.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Dawid\\.nuget\\packages\\melanchall.drywetmidi\\6.1.2\\melanchall.drywetmidi.6.1.2.nupkg.sha512"
+  ],
+  "logs": []
+}

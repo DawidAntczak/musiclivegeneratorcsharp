@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32922.545
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MidiPlayerWpf", "MidiPlayerWpf\MidiPlayerWpf.csproj", "{219C1921-9A4D-4F75-A566-55C97E888654}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playground", "Playground\Playground.csproj", "{8C13A4ED-6DCE-46DF-808F-B2E5049CBA9D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Splitter", "Splitter\Splitter.csproj", "{09F12AA9-FADB-4C0D-BB68-BE603B19E2FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicInterface", "MusicInterface\MusicInterface.csproj", "{6C0FD5B4-14A6-4B49-A237-0C54F48AA8F3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{219C1921-9A4D-4F75-A566-55C97E888654}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{219C1921-9A4D-4F75-A566-55C97E888654}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{219C1921-9A4D-4F75-A566-55C97E888654}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{219C1921-9A4D-4F75-A566-55C97E888654}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C13A4ED-6DCE-46DF-808F-B2E5049CBA9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C13A4ED-6DCE-46DF-808F-B2E5049CBA9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C13A4ED-6DCE-46DF-808F-B2E5049CBA9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C13A4ED-6DCE-46DF-808F-B2E5049CBA9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09F12AA9-FADB-4C0D-BB68-BE603B19E2FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09F12AA9-FADB-4C0D-BB68-BE603B19E2FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09F12AA9-FADB-4C0D-BB68-BE603B19E2FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09F12AA9-FADB-4C0D-BB68-BE603B19E2FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C0FD5B4-14A6-4B49-A237-0C54F48AA8F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C0FD5B4-14A6-4B49-A237-0C54F48AA8F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C0FD5B4-14A6-4B49-A237-0C54F48AA8F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C0FD5B4-14A6-4B49-A237-0C54F48AA8F3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B1782BFD-C49A-418E-91A3-B83601F9C883}
+	EndGlobalSection
+EndGlobal

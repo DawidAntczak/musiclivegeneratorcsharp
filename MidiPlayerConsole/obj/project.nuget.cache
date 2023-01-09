@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "dgSpecHash": "PJSHnBn7bd+yiw7EIh3HSFg4cXiMid2oWK0sTXMjHdKBU/wM56FwsFdMD9ZMynCJYRs7UiNbpBm1wzS3L8buwg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Dawid\\source\\repos\\MidiPlayer\\MidiPlayerConsole\\MidiPlayerConsole.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Dawid\\.nuget\\packages\\naudio\\1.9.0\\naudio.1.9.0.nupkg.sha512",
+    "C:\\Users\\Dawid\\.nuget\\packages\\soundplayercontrol\\0.9.0.6\\soundplayercontrol.0.9.0.6.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'SoundPlayerControl 0.9.0.6' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "SoundPlayerControl",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
+}

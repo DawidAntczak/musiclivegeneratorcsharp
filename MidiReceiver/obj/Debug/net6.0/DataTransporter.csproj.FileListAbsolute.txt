@@ -1,0 +1,15 @@
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\bin\Debug\net6.0\DataTransporter.deps.json
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\bin\Debug\net6.0\DataTransporter.dll
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\bin\Debug\net6.0\DataTransporter.pdb
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\obj\Debug\net6.0\DataTransporter.csproj.AssemblyReference.cache
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\obj\Debug\net6.0\DataTransporter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\obj\Debug\net6.0\DataTransporter.AssemblyInfoInputs.cache
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\obj\Debug\net6.0\DataTransporter.AssemblyInfo.cs
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\obj\Debug\net6.0\DataTransporter.csproj.CoreCompileInputs.cache
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\obj\Debug\net6.0\DataTransporter.dll
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\obj\Debug\net6.0\refint\DataTransporter.dll
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\obj\Debug\net6.0\DataTransporter.pdb
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\obj\Debug\net6.0\ref\DataTransporter.dll
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\bin\Debug\net6.0\Melanchall_DryWetMidi_Native32.dll
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\bin\Debug\net6.0\Melanchall_DryWetMidi_Native64.dll
+C:\Users\Dawid\source\repos\MidiPlayer\MidiReceiver\bin\Debug\net6.0\Melanchall_DryWetMidi_Native64.dylib

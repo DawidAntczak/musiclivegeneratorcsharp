@@ -1,0 +1,148 @@
+{
+  "version": 3,
+  "targets": {
+    "net6.0": {
+      "NAudio/1.9.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/NAudio.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/NAudio.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "SoundPlayerControl/0.9.0.6": {
+        "type": "package",
+        "dependencies": {
+          "NAudio": "1.9.0"
+        },
+        "compile": {
+          "lib/net48/SoundPlayerControl.dll": {}
+        },
+        "runtime": {
+          "lib/net48/SoundPlayerControl.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "NAudio/1.9.0": {
+      "sha512": "PjcPhL5AnbF1YmZxqFYuAEVVRNCNWWIm6Gi32AGQ0dmHF9+s7TUFfVxEo46MbeIfpUE+Wz60ZNTLMXTxBI1m9w==",
+      "type": "package",
+      "path": "naudio/1.9.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35/NAudio.dll",
+        "lib/net35/NAudio.xml",
+        "lib/netstandard2.0/NAudio.dll",
+        "lib/netstandard2.0/NAudio.xml",
+        "lib/uap10.0.10240/NAudio.dll",
+        "lib/uap10.0.10240/NAudio.pri",
+        "lib/uap10.0.10240/NAudio.xml",
+        "naudio.1.9.0.nupkg.sha512",
+        "naudio.nuspec"
+      ]
+    },
+    "SoundPlayerControl/0.9.0.6": {
+      "sha512": "M+O063lGB3TrJhq3tcHySFQr4B33Zt60FYpgfR3G/wl6xOzvZR6BfXnePaw6vjZZluFq/ahZMKA9rtpCKDzbxw==",
+      "type": "package",
+      "path": "soundplayercontrol/0.9.0.6",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "content/IconSoundControl.ico",
+        "content/IconSoundControl.png",
+        "content/Notes.txt",
+        "lib/net48/SoundPlayerControl.dll",
+        "soundplayercontrol.0.9.0.6.nupkg.sha512",
+        "soundplayercontrol.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net6.0": [
+      "SoundPlayerControl >= 0.9.0.6"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Dawid\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\Dawid\\source\\repos\\MidiPlayer\\MidiPlayerConsole\\MidiPlayerConsole.csproj",
+      "projectName": "MidiPlayerConsole",
+      "projectPath": "C:\\Users\\Dawid\\source\\repos\\MidiPlayer\\MidiPlayerConsole\\MidiPlayerConsole.csproj",
+      "packagesPath": "C:\\Users\\Dawid\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Dawid\\source\\repos\\MidiPlayer\\MidiPlayerConsole\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\Dawid\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net6.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net6.0": {
+        "targetAlias": "net6.0",
+        "dependencies": {
+          "SoundPlayerControl": {
+            "target": "Package",
+            "version": "[0.9.0.6, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+      }
+    }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'SoundPlayerControl 0.9.0.6' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "SoundPlayerControl",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
+}

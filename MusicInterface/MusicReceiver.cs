@@ -29,7 +29,7 @@ namespace MusicInterface
 			_wsClient.UnregisterOnMessage(OnMessage);
 		}
 
-		public void SendInput(InputData inputData)
+		public void SendControls(ControlDataContract inputData)
 		{
 			Console.WriteLine($"Sending input: {JsonConvert.SerializeObject(inputData)}" );
 			_wsClient.Send(inputData);

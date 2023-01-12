@@ -7,11 +7,47 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Height="50" Width="100" Click="StartGeneratingButton_Click" Margin="310,118,390,266">Start generating</Button>
-        <Button Height="50" Width="100" Click="StopGeneratingButton_Click" Margin="456,118,244,266">Stop generating</Button>
-        <ListBox Name="HistogramInputList" Width="200" Margin="52,22,548,17"/>
-        <ListBox Name="ModeInputList" Width="200" Margin="590,22,10,303"/>
-        <Slider Name="DensityInputSlider" Height="50" Width="200" Margin="506,317,94,67" Minimum="1" Maximum="10" Value="1" IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
-        <CheckBox Name="ResetCheckbox" Height="20" Width="50" Margin="375,292,375,92">Reset</CheckBox>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="0.25*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" Grid.Column="0" Click="StartGeneratingButton_Click" Margin="10,10,10,10">Start generating</Button>
+            <Button Grid.Row="1" Grid.Column="0" Click="StopGeneratingButton_Click" Margin="10,10,10,10">Stop generating</Button>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Mode</TextBlock>
+            <ListBox Grid.Row="1" Grid.Column="0" Name="ModeInputList"/>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Events per request</TextBlock>
+            <Slider Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Name="RequestedEventCountSlider" AutoToolTipPlacement="TopLeft" Minimum="0" Value="0" Maximum ="3" IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
+        </Grid>
+        <TextBlock Grid.Row="1" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Attack density</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center">Avg pitches played</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center">Entropy</TextBlock>
+        <Slider Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Name="AttackDensitySlider" AutoToolTipPlacement="TopLeft" Minimum="0" Maximum ="6" Value="0" IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
+        <Slider Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Name="AvgPitchesPlayedSlider" Minimum="0" AutoToolTipPlacement="TopLeft" Maximum ="3" Value="0" IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
+        <Slider Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Name="EntropySlider" Minimum="0" Value="0" AutoToolTipPlacement="TopLeft" Maximum ="3" IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
+        <CheckBox Grid.Row="3" Grid.Column="2" Name="ResetCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center">Reset</CheckBox>
     </Grid>
 </Window>

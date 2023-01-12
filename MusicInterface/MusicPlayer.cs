@@ -12,17 +12,17 @@ namespace MusicInterface
     public class MusicPlayer
     {
         private readonly MusicReceiver _musicReceiver;
-        private readonly Func<InputData> _inputCollector;
+        private readonly Func<ControlData> _controlsCollector;
         private readonly int _milisecondsOffset;
 
         private readonly Queue<MidiFile> _nextMidis = new Queue<MidiFile>();
 
         private CancellationTokenSource _playingCts = null;
 
-        public MusicPlayer(MusicReceiver musicReceiver, Func<InputData> inputCollector, int milisecondsOffset = 500)
+        public MusicPlayer(MusicReceiver musicReceiver, Func<ControlData> inputCollector, int milisecondsOffset = 500)
         {
             _musicReceiver = musicReceiver;
-            _inputCollector = inputCollector;
+            _controlsCollector = inputCollector;
             _milisecondsOffset = milisecondsOffset;
         }
 
@@ -34,7 +34,8 @@ namespace MusicInterface
             {
                 using (var outputDevice = /*OutputDevice.GetByName("VirtualMIDISynth #1") ?? */OutputDevice.GetByName("Microsoft GS Wavetable Synth"))
                 {
-                    Task.Run(() => _musicReceiver.SendInput(_inputCollector()));
+                    var contract = ControlDataContract.FromControlData(_controlsCollector());
+                    Task.Run(() => _musicReceiver.SendControls(contract));
 
                     while (!_playingCts.IsCancellationRequested)
                     {
@@ -74,7 +75,8 @@ namespace MusicInterface
                 //await Task.Delay(toWait);
                 Task.Delay(toWait).GetAwaiter().GetResult();
 
-            Task.Run(() => _musicReceiver.SendInput(_inputCollector()));
+            var contract = ControlDataContract.FromControlData(_controlsCollector());
+            Task.Run(() => _musicReceiver.SendControls(contract));
         }
     }
 }

@@ -23,20 +23,20 @@ var opts = new ExecutionDataflowBlockOptions { BoundedCapacity = 15, MaxMessages
 
 var getPathsBlock = new TransformManyBlock<string, string>(inputDirectory => Directory.GetFiles(inputDirectory, "*.mid*", SearchOption.AllDirectories), opts);
 var loadBlock = new TransformManyBlock<string, MidiWithId>(Load, opts);
+var splitBlock = new TransformManyBlock<MidiWithId, MidiWithId>(Split, opts);
 var removeNonPianoTracksBlock = new TransformManyBlock<MidiWithId, MidiWithId>(RemoveNonPianoTracks, opts);
 var removeDrumTrackBlock = new TransformManyBlock<MidiWithId, MidiWithId>(RemoveDrumTrack, opts);
 var setVolumeToMaxBlock = new TransformManyBlock<MidiWithId, MidiWithId>(SetVolumeToMax, opts);
 var copyWithSpeedFractionBlock = new TransformManyBlock<MidiWithId, MidiWithId>(CopyWithSpeedFraction, opts);
-var splitBlock = new TransformManyBlock<MidiWithId, MidiWithId>(Split, opts);
 var saveBlock = new ActionBlock<MidiWithId>(midiWithId => Save(midiWithId, Data.OutputDirectory), opts);
 
 getPathsBlock.LinkTo(loadBlock, new DataflowLinkOptions { PropagateCompletion = true });
 loadBlock.LinkTo(splitBlock, new DataflowLinkOptions { PropagateCompletion = true });
+splitBlock.LinkTo(removeNonPianoTracksBlock, new DataflowLinkOptions { PropagateCompletion = true });
 removeNonPianoTracksBlock.LinkTo(removeDrumTrackBlock, new DataflowLinkOptions { PropagateCompletion = true });
 removeDrumTrackBlock.LinkTo(setVolumeToMaxBlock, new DataflowLinkOptions { PropagateCompletion = true });
 setVolumeToMaxBlock.LinkTo(copyWithSpeedFractionBlock, new DataflowLinkOptions { PropagateCompletion = true });
 copyWithSpeedFractionBlock.LinkTo(saveBlock, new DataflowLinkOptions { PropagateCompletion = true });
-splitBlock.LinkTo(removeNonPianoTracksBlock, new DataflowLinkOptions { PropagateCompletion = true });
 
 getPathsBlock.Post(Data.InputDirectory);
 

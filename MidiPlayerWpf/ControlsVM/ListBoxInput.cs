@@ -4,12 +4,12 @@ using System.Windows.Controls;
 
 namespace MidiPlayerWpf.ControlsVM
 {
-    internal class ListBoxVector
+    internal class ListBoxInput
     {
         private readonly ListBox _listBox;
         private readonly IDictionary<string, Vector> _values;
 
-        public ListBoxVector(ListBox listBox, IDictionary<string, Vector> values)
+        public ListBoxInput(ListBox listBox, IDictionary<string, Vector> values)
         {
             _listBox = listBox;
             _values = values;
@@ -17,7 +17,7 @@ namespace MidiPlayerWpf.ControlsVM
             InitListBox();
         }
 
-        public Vector GetSelectedValue()
+        public Vector GetVectorValue()
         {
             return _values[(string)_listBox.SelectedValue];
         }

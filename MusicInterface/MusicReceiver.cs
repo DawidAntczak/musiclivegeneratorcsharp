@@ -4,19 +4,24 @@ using WebSocketSharp;
 
 namespace MusicInterface
 {
-	public class MusicReceiver : IDisposable
-	{
-		private readonly WsClient _wsClient;
-		private Action<byte[]> _onReceived = _ => { };
+    public class MusicReceiver : IDisposable
+    {
+        private readonly WsClient _wsClient;
+        private readonly Action<string> _onLog;
 
-		public MusicReceiver(WsClient wsClient)
-		{
-			_wsClient = wsClient;
-		}
+        private Action<byte[]> _onReceived = _ => { };
 
-		public void StartListening(Action<byte[]> onReveived)
+        public MusicReceiver(WsClient wsClient, Action<string> onLog)
+        {
+            _wsClient = wsClient;
+            _onLog = onLog;
+        }
+
+        public MusicReceiver(WsClient wsClient) : this(wsClient, _ => { }) { }
+
+        public void StartListening(Action<byte[]> onReceived)
 		{
-			_onReceived = onReveived;
+			_onReceived = onReceived;
 			_wsClient.RegisterOnMessage(OnMessage);
 			_wsClient.Connect();
 			_wsClient.Send(new StartMessage());
@@ -31,13 +36,13 @@ namespace MusicInterface
 
 		public void SendControls(ControlDataContract inputData)
 		{
-			Console.WriteLine($"Sending input: {JsonConvert.SerializeObject(inputData)}" );
+            _onLog($"Sending input: {JsonConvert.SerializeObject(inputData)}" );
 			_wsClient.Send(inputData);
 		}
 
 		private void OnMessage(object sender, MessageEventArgs e)
 		{
-			Console.WriteLine($"Received data of length: {e.RawData.Length} bytes.");
+            _onLog($"Received data of length: {e.RawData.Length} bytes.");
 			_onReceived(e.RawData);
 		}
 

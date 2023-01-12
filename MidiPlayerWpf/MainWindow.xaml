@@ -11,7 +11,9 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="0.25*"/>
             <RowDefinition Height="0.5*"/>
-            <RowDefinition Height="2*"/>
+            <RowDefinition Height="0.25*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -48,6 +50,9 @@
         <Slider Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Name="AttackDensitySlider" AutoToolTipPlacement="TopLeft" Minimum="0" Maximum ="6" Value="0" IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
         <Slider Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Name="AvgPitchesPlayedSlider" Minimum="0" AutoToolTipPlacement="TopLeft" Maximum ="3" Value="0" IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
         <Slider Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Name="EntropySlider" Minimum="0" Value="0" AutoToolTipPlacement="TopLeft" Maximum ="3" IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
-        <CheckBox Grid.Row="3" Grid.Column="2" Name="ResetCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center">Reset</CheckBox>
+        <TextBlock Grid.Row="3" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center">Key adjustment</TextBlock>
+        <Slider Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Name="KeyAdjustmentSlider" AutoToolTipPlacement="TopLeft" Minimum="-12" Maximum ="12" Value="0" IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
+        <TextBlock Grid.Row="3" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center">Reset RNN state</TextBlock>
+        <CheckBox Grid.Row="4" Grid.Column="2" Name="ResetCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center"></CheckBox>
     </Grid>
 </Window>

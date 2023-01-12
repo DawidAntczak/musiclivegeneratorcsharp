@@ -13,70 +13,119 @@ namespace MusicInterface
     {
         private readonly MusicReceiver _musicReceiver;
         private readonly Func<ControlData> _controlsCollector;
+        private readonly Action<string> _onLog;
+        private readonly Action<Exception> _onError;
         private readonly int _milisecondsOffset;
 
         private readonly Queue<MidiFile> _nextMidis = new Queue<MidiFile>();
 
         private CancellationTokenSource _playingCts = null;
 
-        public MusicPlayer(MusicReceiver musicReceiver, Func<ControlData> inputCollector, int milisecondsOffset = 500)
+        private int _keyAdjustmentInSemitones = 0;
+
+        private Playback _playback = null;
+
+        public MusicPlayer(MusicReceiver musicReceiver, Func<ControlData> inputCollector, Action<string> onLog, Action<Exception> onError, int milisecondsOffset = 500)
         {
             _musicReceiver = musicReceiver;
             _controlsCollector = inputCollector;
+            _onLog = onLog;
+            _onError = onError;
             _milisecondsOffset = milisecondsOffset;
+        }
+
+        public MusicPlayer(MusicReceiver musicReceiver, Func<ControlData> inputCollector, int milisecondsOffset = 500)
+            : this(musicReceiver, inputCollector, _ => { }, _ => { }, milisecondsOffset) { }
+
+        public MusicPlayer(MusicReceiver musicReceiver, Func<ControlData> inputCollector, Action<Exception> onError, int milisecondsOffset = 500)
+            : this(musicReceiver, inputCollector, _ => { }, onError, milisecondsOffset) { }
+
+        public int AddSemitonesToKeyAdjustment(int semitones)
+        {
+            Interlocked.Add(ref _keyAdjustmentInSemitones, semitones);
+            return _keyAdjustmentInSemitones;
+        }
+
+        public void SetKeyAdjustment(int semitones)
+        {
+            _keyAdjustmentInSemitones = semitones;
         }
 
         public Task StartInBackground()
         {
             _playingCts = new CancellationTokenSource();
 
-            return Task.Run(() =>
+            return Task.Run(() => RunWithOnErrorCallback(() =>
             {
                 using (var outputDevice = /*OutputDevice.GetByName("VirtualMIDISynth #1") ?? */OutputDevice.GetByName("Microsoft GS Wavetable Synth"))
                 {
                     var contract = ControlDataContract.FromControlData(_controlsCollector());
-                    Task.Run(() => _musicReceiver.SendControls(contract));
+                    Task.Run(() => RunWithOnErrorCallback(
+                        () => _musicReceiver.SendControls(contract))
+                    );
 
                     while (!_playingCts.IsCancellationRequested)
                     {
                         if (_nextMidis.Count > 0)
                         {
                             var midiFile = _nextMidis.Dequeue();
-                            using (var playback = midiFile.GetPlayback(outputDevice))
+                            using (_playback = midiFile.GetPlayback(outputDevice))
                             {
-                                Console.WriteLine("Starting to play next segment");
-                                playback.Play();
+                                _onLog("Starting to play next segment");
+                                _playback.Play();
                             }
                         }
                     }
                 }
-            });
+            }));
         }
 
         public void Stop()
         {
             _playingCts?.Cancel();
+
+
+            var playback = _playback;
+            try { playback?.Stop(); }
+            catch { }
         }
 
-        public void EnqueueAndRequest(byte[] music)
+        public void EnqueueAndRequestNext(byte[] music)
         {
-            _playingCts = new CancellationTokenSource();
-            var midiStream = new MemoryStream(music);
-            var midiFile = MidiFile.Read(midiStream);
-            _nextMidis.Enqueue(midiFile);
+            RunWithOnErrorCallback(() =>
+            {
+                _playingCts = new CancellationTokenSource();
 
-            while (_nextMidis.Count > 0) ;// await Task.Delay(1);
+                var midiStream = new MemoryStream(music);
+                var midiFile = MidiFile.Read(midiStream);
+                MidiUtils.Transpose(midiFile, _keyAdjustmentInSemitones);
+                _nextMidis.Enqueue(midiFile);
 
-            var length = midiFile.GetDuration<MetricTimeSpan>();
-            Console.WriteLine($"Received track with length: {length.TotalSeconds} s");
+                while (_nextMidis.Count > 0) ;// await Task.Delay(1);
 
-            var toWait = (int)length.TotalMilliseconds - _milisecondsOffset;
-            if (toWait > 0)
-                //await Task.Delay(toWait);
-                Task.Delay(toWait).GetAwaiter().GetResult();
+                var length = midiFile.GetDuration<MetricTimeSpan>();
+                _onLog($"Received track with length: {length.TotalSeconds} s");
 
-            var contract = ControlDataContract.FromControlData(_controlsCollector());
-            Task.Run(() => _musicReceiver.SendControls(contract));
+                var toWait = (int)length.TotalMilliseconds - _milisecondsOffset;
+                if (toWait > 0)
+                    //await Task.Delay(toWait);
+                    Task.Delay(toWait).GetAwaiter().GetResult();
+
+                var contract = ControlDataContract.FromControlData(_controlsCollector());
+                Task.Run(() => RunWithOnErrorCallback(() => _musicReceiver.SendControls(contract)));
+            });
+        }
+
+        private void RunWithOnErrorCallback(Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception e)
+            {
+                _onError(e);
+            }
         }
     }
 }

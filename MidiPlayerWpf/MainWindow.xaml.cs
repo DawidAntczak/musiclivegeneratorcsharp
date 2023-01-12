@@ -1,70 +1,79 @@
 ﻿using MusicInterface;
-using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using MidiPlayerWpf.ControlsVM;
+using System;
+using Range = MidiPlayerWpf.ControlsVM.Range;
 
 namespace MidiPlayerWpf
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
-	public partial class MainWindow : Window
-	{
-		private readonly MusicReceiver _musicReceiver;
-        private readonly MusicPlayer _musicPlayer;
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        private readonly ListBoxInput _modeListBox;
+        private readonly SliderInput _attackDensitySlider;
+        private readonly SliderInput _avgPitchesPlayedSlider;
+        private readonly SliderInput _entropySlider;
+        private readonly SliderInput _requestedEventCount;
+        private readonly SliderInput _keyAdjustmentSlider;
 
-        private readonly ListBoxVector _modeListBox;
-        private readonly SliderVector _attackDensitySlider;
-        private readonly SliderVector _avgPitchesPlayedSlider;
-        private readonly SliderVector _entropySlider;
-        private readonly SliderVector _requestedEventCount;
+        private MusicReceiver? _musicReceiver;
+        private MusicPlayer? _musicPlayer;
 
         public MainWindow()
-		{
-			InitializeComponent();
+        {
+            InitializeComponent();
 
-            _musicReceiver = new MusicReceiver(new WsClient("ws://localhost:7890/listener"));
-            _musicPlayer = new MusicPlayer(_musicReceiver, CollectCurrentControlData);
-
-            _modeListBox = new ListBoxVector(ModeInputList, Controls.Modes);
-            _attackDensitySlider = new SliderVector(AttackDensitySlider, new ControlsVM.Range(Controls.AttackDensities.First(), Controls.AttackDensities.Last(), 0));
-            _avgPitchesPlayedSlider = new SliderVector(AvgPitchesPlayedSlider, new ControlsVM.Range(Controls.AvgPitchesPlayed.First(), Controls.AvgPitchesPlayed.Last(), 0));
-            _entropySlider = new SliderVector(EntropySlider, new ControlsVM.Range(Controls.Entropies.First(), Controls.Entropies.Last(), 0));
-            _requestedEventCount = new SliderVector(RequestedEventCountSlider, new ControlsVM.Range(25, 250, 100));
+            _modeListBox = new ListBoxInput(ModeInputList, Controls.Modes);
+            _attackDensitySlider = new SliderInput(AttackDensitySlider, new Range(Controls.AttackDensities.First(), Controls.AttackDensities.Last(), 2));
+            _avgPitchesPlayedSlider = new SliderInput(AvgPitchesPlayedSlider, new Range(Controls.AvgPitchesPlayed.First(), Controls.AvgPitchesPlayed.Last(), 1));
+            _entropySlider = new SliderInput(EntropySlider, new Range(Controls.Entropies.First(), Controls.Entropies.Last(), 1));
+            _requestedEventCount = new SliderInput(RequestedEventCountSlider, new Range(25, 250, 50));
+            _keyAdjustmentSlider = new SliderInput(KeyAdjustmentSlider, new Range(-12, 12, 0));
         }
 
         private ControlData CollectCurrentControlData()
-		{
-			ControlData data = null;
-			Dispatcher.Invoke(() =>
+        {
+            ControlData data = null;
+            Dispatcher.Invoke(() =>
             {
                 data = new ControlData
                 {
-                    Mode = _modeListBox.GetSelectedValue(),
-                    AttackDensity = _attackDensitySlider.GetValue(),
-                    AvgPitchesPlayed = _avgPitchesPlayedSlider.GetValue(),
-                    Entropy = _entropySlider.GetValue(),
+                    Mode = _modeListBox.GetVectorValue(),
+                    AttackDensity = _attackDensitySlider.GetVectorValue(),
+                    AvgPitchesPlayed = _avgPitchesPlayedSlider.GetVectorValue(),
+                    Entropy = _entropySlider.GetVectorValue(),
                     Reset = ResetCheckbox.IsChecked.Value,
                     RequestedEventCount = _requestedEventCount.GetIntValue()
                 };
-				ResetCheckbox.IsChecked = false;
-			}
-			);
-			return data;
-		}
+                ResetCheckbox.IsChecked = false;
+                var musicPlayer = _musicPlayer;
+                musicPlayer?.SetKeyAdjustment(_keyAdjustmentSlider.GetIntValue());
+            }
+            );
+            return data;
+        }
 
         private void StartGeneratingButton_Click(object sender, RoutedEventArgs e)
-		{
-			_musicReceiver.StartListening(_musicPlayer.EnqueueAndRequest);
+        {
+            _musicReceiver = new MusicReceiver(new WsClient("ws://localhost:7890/listener"));
+            _musicPlayer = new MusicPlayer(_musicReceiver, CollectCurrentControlData, Console.WriteLine, Console.WriteLine);
+
+            _musicReceiver.StartListening(_musicPlayer.EnqueueAndRequestNext);
             _musicPlayer.StartInBackground();
         }
 
-		private void StopGeneratingButton_Click(object sender, RoutedEventArgs e)
-		{
-            _musicPlayer.Stop();
-            _musicReceiver.StopListening();
-		}
+        private void StopGeneratingButton_Click(object sender, RoutedEventArgs e)
+        {
+            _musicPlayer?.Stop();
+            _musicReceiver?.StopListening();
+
+            _musicReceiver?.Dispose();
+            _musicReceiver = null;
+            _musicPlayer = null;
+        }
 	}
 }

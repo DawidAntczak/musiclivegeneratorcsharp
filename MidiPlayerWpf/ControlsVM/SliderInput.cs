@@ -4,12 +4,12 @@ using System.Windows.Controls;
 
 namespace MidiPlayerWpf.ControlsVM
 {
-    internal class SliderVector
+    internal class SliderInput
     {
         protected readonly Slider _slider;
         protected readonly Range _range;
 
-        public SliderVector(Slider slider, Range range)
+        public SliderInput(Slider slider, Range range)
         {
             _slider = slider;
             _range = range;
@@ -24,7 +24,7 @@ namespace MidiPlayerWpf.ControlsVM
             _slider.Value = _range.Default;
         }
 
-        public Vector GetValue()
+        public Vector GetVectorValue()
         {
             return Vector.OneHot(_range.End + 1, GetIntValue());
         }

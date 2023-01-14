@@ -3,6 +3,7 @@ using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.Multimedia;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,8 @@ namespace MusicInterface
         private int _keyAdjustmentInSemitones = 0;
 
         private Playback _playback = null;
+
+        private readonly AutoResetEvent _skipToNextEvent = new AutoResetEvent(false);
 
         public MusicPlayer(MusicReceiver musicReceiver, Func<ControlData> inputCollector, Action<string> onLog, Action<Exception> onError, int milisecondsOffset = 500)
         {
@@ -66,15 +69,18 @@ namespace MusicInterface
 
                     while (!_playingCts.IsCancellationRequested)
                     {
-                        if (_nextMidis.Count > 0)
+                        RunWithOnErrorCallback(() =>
                         {
-                            var midiFile = _nextMidis.Dequeue();
-                            using (_playback = midiFile.GetPlayback(outputDevice))
+                            if (_nextMidis.Count > 0)
                             {
-                                _onLog("Starting to play next segment");
-                                _playback.Play();
+                                var midiFile = _nextMidis.Dequeue();
+                                using (_playback = midiFile.GetPlayback(outputDevice))
+                                {
+                                    _onLog($"Starting to play next segment (length: {midiFile.GetDuration<MetricTimeSpan>().TotalSeconds} s)");
+                                    _playback.Play();
+                                }
                             }
-                        }
+                        });
                     }
                 }
             }));
@@ -84,10 +90,18 @@ namespace MusicInterface
         {
             _playingCts?.Cancel();
 
-
             var playback = _playback;
             try { playback?.Stop(); }
             catch { }
+        }
+
+        public void SkipToNext()
+        {
+            _nextMidis.Clear();
+            var playback = _playback;
+            try { playback?.Stop(); }
+            catch { }
+            finally { _skipToNextEvent.Set(); }
         }
 
         public void EnqueueAndRequestNext(byte[] music)
@@ -104,12 +118,10 @@ namespace MusicInterface
                 while (_nextMidis.Count > 0) ;// await Task.Delay(1);
 
                 var length = midiFile.GetDuration<MetricTimeSpan>();
-                _onLog($"Received track with length: {length.TotalSeconds} s");
 
                 var toWait = (int)length.TotalMilliseconds - _milisecondsOffset;
                 if (toWait > 0)
-                    //await Task.Delay(toWait);
-                    Task.Delay(toWait).GetAwaiter().GetResult();
+                    _skipToNextEvent.WaitOne(toWait);
 
                 var contract = ControlDataContract.FromControlData(_controlsCollector());
                 Task.Run(() => RunWithOnErrorCallback(() => _musicReceiver.SendControls(contract)));

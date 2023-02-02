@@ -2,7 +2,7 @@
 {
     public static class Data
     {
-        public static string InputDirectory = @"C:\DATA\prep\maestro-v3.0.0";
-        public static string OutputDirectory = @"C:\DATA\prep\maestro-v3.0.0-30s";
+        public static string InputDirectory = @"C:\Repos\vgm-rnn\downloaded_midis";
+        public static string OutputDirectory = @"C:\DATA\prep\all-game-piano-music-30s-3";
     }
 }

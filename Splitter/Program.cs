@@ -19,24 +19,32 @@ foreach (var subDirectory in subDirectories)
     }
 }
 
-var opts = new ExecutionDataflowBlockOptions { BoundedCapacity = 15, MaxMessagesPerTask = 1 };
+var options = new ExecutionDataflowBlockOptions { EnsureOrdered = false/*, MaxMessagesPerTask = 1, MaxDegreeOfParallelism = 20*/ };
 
-var getPathsBlock = new TransformManyBlock<string, string>(inputDirectory => Directory.GetFiles(inputDirectory, "*.mid*", SearchOption.AllDirectories), opts);
-var loadBlock = new TransformManyBlock<string, MidiWithId>(Load, opts);
-var splitBlock = new TransformManyBlock<MidiWithId, MidiWithId>(Split, opts);
-var removeNonPianoTracksBlock = new TransformManyBlock<MidiWithId, MidiWithId>(RemoveNonPianoTracks, opts);
-var removeDrumTrackBlock = new TransformManyBlock<MidiWithId, MidiWithId>(RemoveDrumTrack, opts);
-var setVolumeToMaxBlock = new TransformManyBlock<MidiWithId, MidiWithId>(SetVolumeToMax, opts);
-var copyWithSpeedFractionBlock = new TransformManyBlock<MidiWithId, MidiWithId>(CopyWithSpeedFraction, opts);
-var saveBlock = new ActionBlock<MidiWithId>(midiWithId => Save(midiWithId, Data.OutputDirectory), opts);
+var getPathsBlock = new TransformManyBlock<string, string>(inputDirectory => Directory.GetFiles(inputDirectory, "*.mid*", SearchOption.AllDirectories), options);
+var loadBlock = new TransformManyBlock<string, MidiWithId>(Load, options);
+var splitBlock = new TransformManyBlock<MidiWithId, MidiWithId>(Split, options);
+var removeDrumTrackBlock = new TransformManyBlock<MidiWithId, MidiWithId>(RemoveDrumTrack, options);
+var removeNonPianoTracksBlock = new TransformManyBlock<MidiWithId, MidiWithId>(RemoveNonPianoTracks, options);
+var setVolumeToMaxBlock = new TransformManyBlock<MidiWithId, MidiWithId>(SetVolumeToMax, options);
+var copyWithSpeedFractionBlock = new TransformManyBlock<MidiWithId, MidiWithId>(CopyWithSpeedFraction, options);
+var saveBlock = new ActionBlock<MidiWithId>(midiWithId => Save(midiWithId, Data.OutputDirectory), options);
 
 getPathsBlock.LinkTo(loadBlock, new DataflowLinkOptions { PropagateCompletion = true });
 loadBlock.LinkTo(splitBlock, new DataflowLinkOptions { PropagateCompletion = true });
-splitBlock.LinkTo(removeNonPianoTracksBlock, new DataflowLinkOptions { PropagateCompletion = true });
-removeNonPianoTracksBlock.LinkTo(removeDrumTrackBlock, new DataflowLinkOptions { PropagateCompletion = true });
-removeDrumTrackBlock.LinkTo(setVolumeToMaxBlock, new DataflowLinkOptions { PropagateCompletion = true });
+splitBlock.LinkTo(removeDrumTrackBlock, new DataflowLinkOptions { PropagateCompletion = true });
+removeDrumTrackBlock.LinkTo(removeNonPianoTracksBlock, new DataflowLinkOptions { PropagateCompletion = true });
+removeNonPianoTracksBlock.LinkTo(setVolumeToMaxBlock, new DataflowLinkOptions { PropagateCompletion = true });
 setVolumeToMaxBlock.LinkTo(copyWithSpeedFractionBlock, new DataflowLinkOptions { PropagateCompletion = true });
 copyWithSpeedFractionBlock.LinkTo(saveBlock, new DataflowLinkOptions { PropagateCompletion = true });
+
+var streamwriter = new StreamWriter(new FileStream("logs.txt", FileMode.Create))
+{
+    AutoFlush = true
+};
+Console.SetOut(streamwriter);
+
+Console.WriteLine($"Starting processing");
 
 getPathsBlock.Post(Data.InputDirectory);
 
@@ -44,22 +52,49 @@ getPathsBlock.Complete();
 
 await saveBlock.Completion;
 
+Console.WriteLine($"Ended processing");
+
 static IEnumerable<MidiWithId> RemoveNonPianoTracks(MidiWithId midiWithId)
 {
     try
     {
-        var tracks = midiWithId.Midi.GetTrackChunks().ToList();
-        foreach (var track in tracks)
+        var chunks = midiWithId.Midi.GetTrackChunks().ToList();
+        foreach (var chunk in chunks)
         {
-            var programChanges = track.Events.OfType<ProgramChangeEvent>();
+            var programChanges = chunk.Events.OfType<ProgramChangeEvent>();
             if (programChanges.Any(e => e.ProgramNumber > 7))
             {
-                midiWithId.Midi.Chunks.Remove(track);
+                if (!midiWithId.Midi.Chunks.Remove(chunk))
+                    throw new Exception($"Chunk {chunk.ChunkId} not found");
             }
         }
-        return midiWithId.Midi.Chunks.Any() && midiWithId.Midi.GetTrackChunks().Any(x => x.Events.OfType<NoteOnEvent>().Any()) 
-            ? new[] { midiWithId }
-            : Enumerable.Empty<MidiWithId>();
+
+        var duration = midiWithId.Midi.GetDuration<MetricTimeSpan>();
+
+        if (!midiWithId.Midi.Chunks.Any() || duration.TotalSeconds < 15.0)
+            return Enumerable.Empty<MidiWithId>();
+
+        var tempoMap = midiWithId.Midi.GetTempoMap();
+
+
+        var noteOnTimes = midiWithId.Midi.GetTimedEvents()
+                .Where(e => e.Event.EventType == MidiEventType.NoteOn)
+                .Select(e => e.TimeAs<MetricTimeSpan>(tempoMap))
+                .Distinct()
+                .Append(duration)
+                .OrderBy(t => t.TotalMicroseconds);
+
+        var lastNoteOnTime = 0.0;
+        foreach (var noteOnTime in noteOnTimes)
+        {
+            if (noteOnTime.TotalSeconds - lastNoteOnTime > 5.0)
+            {
+                return Enumerable.Empty<MidiWithId>();
+            }
+            lastNoteOnTime = noteOnTime.TotalSeconds;
+        }
+
+        return new[] { midiWithId };
     }
     catch (Exception e)
     {
@@ -129,7 +164,19 @@ static IEnumerable<MidiWithId> Load(string path)
 {
     try
     {
-        return new[] { new MidiWithId(MidiFile.Read(path), Path.GetDirectoryName(Path.GetRelativePath(Data.InputDirectory, path)), Path.GetFileNameWithoutExtension(path)) };
+        var midi = MidiFile.Read(path);
+        var midiDuration = midi.GetDuration<MetricTimeSpan>();
+
+        if (midiDuration.TotalHours > 1)
+            throw new Exception($"MIDI is {midiDuration.TotalHours} hours long!");
+
+        return new[] {
+            new MidiWithId(
+                MidiFile.Read(path),
+                Path.GetDirectoryName(Path.GetRelativePath(Data.InputDirectory, path)),
+                Path.GetFileNameWithoutExtension(path)
+                )
+        };
     }
     catch (Exception e)
     {

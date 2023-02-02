@@ -4,22 +4,22 @@ using WebSocketSharp;
 
 namespace MusicInterface
 {
-    public class MusicReceiver : IDisposable
+    public class MusicGenerationModel : IDisposable
     {
         private readonly WsClient _wsClient;
         private readonly Action<string> _onLog;
 
         private Action<byte[]> _onReceived = _ => { };
 
-        public MusicReceiver(WsClient wsClient, Action<string> onLog)
+        public MusicGenerationModel(string wsServerAddress, Action<string> onLog)
         {
-            _wsClient = wsClient;
+            _wsClient = new WsClient(wsServerAddress);
             _onLog = onLog;
         }
 
-        public MusicReceiver(WsClient wsClient) : this(wsClient, _ => { }) { }
+        public MusicGenerationModel(string wsServerAddress) : this(wsServerAddress, _ => { }) { }
 
-        public void StartListening(Action<byte[]> onReceived)
+        public void Connect(Action<byte[]> onReceived)
 		{
 			_onReceived = onReceived;
 			_wsClient.RegisterOnMessage(OnMessage);
@@ -27,16 +27,16 @@ namespace MusicInterface
 			_wsClient.Send(new StartMessage());
 		}
 
-		public void StopListening()
+		public void Disconnect()
 		{
 			_wsClient.Send(new StopMessage());
 			_wsClient.Disconnect();
 			_wsClient.UnregisterOnMessage(OnMessage);
 		}
 
-		public void SendControls(ControlDataContract inputData)
+		public void Request(ControlDataContract inputData)
 		{
-            _onLog($"Sending input: {JsonConvert.SerializeObject(inputData)}" );
+            _onLog($"Sending control data: {JsonConvert.SerializeObject(inputData)}" );
 			_wsClient.Send(inputData);
 		}
 

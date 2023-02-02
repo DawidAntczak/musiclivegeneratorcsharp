@@ -1,16 +1,18 @@
-﻿namespace MidiPlayerWpf.ControlsVM
+﻿using System;
+
+namespace MidiPlayerWpf.ControlsVM
 {
     internal class Range
     {
-        private readonly int _start;
-        private readonly int _end;
-        private readonly int _default;
+        private readonly double _start;
+        private readonly double _end;
+        private readonly double _default;
 
-        public int Start => _start;
-        public int End => _end;
-        public int Default => _default;
+        public double Start => _start;
+        public double End => _end;
+        public double Default => _default;
 
-        public Range(int start, int end, int defaultValue)
+        public Range(double start, double end, double defaultValue)
         {
             _start = start;
             _end = end;

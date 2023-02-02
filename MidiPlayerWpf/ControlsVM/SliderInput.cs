@@ -8,30 +8,40 @@ namespace MidiPlayerWpf.ControlsVM
     {
         protected readonly Slider _slider;
         protected readonly Range _range;
+        protected readonly CheckBox? _checkBox;
 
-        public SliderInput(Slider slider, Range range)
+        public SliderInput(Slider slider, Range range, CheckBox? checkBox = null, bool isChecked = true)
         {
             _slider = slider;
             _range = range;
+            _checkBox = checkBox;
 
-            InitSlider();
+            InitSlider(isChecked);
         }
 
-        private void InitSlider()
+        private void InitSlider(bool isChecked)
         {
             _slider.Minimum = _range.Start;
             _slider.Maximum = _range.End;
             _slider.Value = _range.Default;
+            if (_checkBox != null)
+                _checkBox.IsChecked = isChecked;
         }
 
-        public Vector GetVectorValue()
+        public Vector? GetVectorValue()
         {
-            return Vector.OneHot(_range.End + 1, GetIntValue());
+            var intValue = GetIntValue();
+            return intValue.HasValue ? Vector.OneHot((int)Math.Round(_range.End) + 1, intValue.Value) : null;
         }
 
-        public int GetIntValue()
+        public double? GetDoubleValue()
         {
-            return (int)Math.Round(_slider.Value);
+            return _checkBox == null || _checkBox.IsChecked == true ? _slider.Value : null;
+        }
+
+        public int? GetIntValue()
+        {
+            return _checkBox == null || _checkBox.IsChecked == true ? (int)Math.Round(_slider.Value) : null;
         }
     }
 }

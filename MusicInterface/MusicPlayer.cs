@@ -3,7 +3,6 @@ using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.Multimedia;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,8 +11,9 @@ namespace MusicInterface
 {
     public class MusicPlayer
     {
-        private readonly MusicReceiver _musicReceiver;
+        private readonly MusicGenerationModel _musicReceiver;
         private readonly Func<ControlData> _controlsCollector;
+        private readonly Func<PlayingParams> _playingParamsProvider;
         private readonly Action<string> _onLog;
         private readonly Action<Exception> _onError;
         private readonly int _milisecondsOffset;
@@ -22,37 +22,26 @@ namespace MusicInterface
 
         private CancellationTokenSource _playingCts = null;
 
-        private int _keyAdjustmentInSemitones = 0;
-
         private Playback _playback = null;
 
         private readonly AutoResetEvent _skipToNextEvent = new AutoResetEvent(false);
 
-        public MusicPlayer(MusicReceiver musicReceiver, Func<ControlData> inputCollector, Action<string> onLog, Action<Exception> onError, int milisecondsOffset = 500)
+        public MusicPlayer(MusicGenerationModel musicReceiver, Func<ControlData> controlsCollector, Func<PlayingParams> playingParamsProvider,
+            Action<string> onLog, Action<Exception> onError, int milisecondsOffset = 500)
         {
             _musicReceiver = musicReceiver;
-            _controlsCollector = inputCollector;
+            _controlsCollector = controlsCollector;
+            _playingParamsProvider = playingParamsProvider;
             _onLog = onLog;
             _onError = onError;
             _milisecondsOffset = milisecondsOffset;
         }
 
-        public MusicPlayer(MusicReceiver musicReceiver, Func<ControlData> inputCollector, int milisecondsOffset = 500)
-            : this(musicReceiver, inputCollector, _ => { }, _ => { }, milisecondsOffset) { }
+        public MusicPlayer(MusicGenerationModel musicReceiver, Func<ControlData> inputCollector, Func<PlayingParams> playingParamsProvider, int milisecondsOffset = 500)
+            : this(musicReceiver, inputCollector, playingParamsProvider, _ => { }, _ => { }, milisecondsOffset) { }
 
-        public MusicPlayer(MusicReceiver musicReceiver, Func<ControlData> inputCollector, Action<Exception> onError, int milisecondsOffset = 500)
-            : this(musicReceiver, inputCollector, _ => { }, onError, milisecondsOffset) { }
-
-        public int AddSemitonesToKeyAdjustment(int semitones)
-        {
-            Interlocked.Add(ref _keyAdjustmentInSemitones, semitones);
-            return _keyAdjustmentInSemitones;
-        }
-
-        public void SetKeyAdjustment(int semitones)
-        {
-            _keyAdjustmentInSemitones = semitones;
-        }
+        public MusicPlayer(MusicGenerationModel musicReceiver, Func<ControlData> inputCollector, Func<PlayingParams> playingParamsProvider, Action<Exception> onError, int milisecondsOffset = 500)
+            : this(musicReceiver, inputCollector, playingParamsProvider, _ => { }, onError, milisecondsOffset) { }
 
         public Task StartInBackground()
         {
@@ -64,7 +53,7 @@ namespace MusicInterface
                 {
                     var contract = ControlDataContract.FromControlData(_controlsCollector());
                     Task.Run(() => RunWithOnErrorCallback(
-                        () => _musicReceiver.SendControls(contract))
+                        () => _musicReceiver.Request(contract))
                     );
 
                     while (!_playingCts.IsCancellationRequested)
@@ -112,7 +101,12 @@ namespace MusicInterface
 
                 var midiStream = new MemoryStream(music);
                 var midiFile = MidiFile.Read(midiStream);
-                MidiUtils.Transpose(midiFile, _keyAdjustmentInSemitones);
+                var playingParams = _playingParamsProvider();
+
+                midiFile.Transpose(playingParams.KeyAdjustmentInSemitones);
+                midiFile.OverrideInstrument(playingParams.Instrument);
+                midiFile.OverrideVelocity(playingParams.Velocity);
+
                 _nextMidis.Enqueue(midiFile);
 
                 while (_nextMidis.Count > 0) ;// await Task.Delay(1);
@@ -124,7 +118,7 @@ namespace MusicInterface
                     _skipToNextEvent.WaitOne(toWait);
 
                 var contract = ControlDataContract.FromControlData(_controlsCollector());
-                Task.Run(() => RunWithOnErrorCallback(() => _musicReceiver.SendControls(contract)));
+                Task.Run(() => RunWithOnErrorCallback(() => _musicReceiver.Request(contract)));
             });
         }
 

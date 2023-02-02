@@ -7,6 +7,7 @@
         public Vector AvgPitchesPlayed { get; set; }
         public Vector Entropy { get; set; }
         public bool Reset { get; set; }
-        public int RequestedEventCount { get; set; }
+        public double? Temperature { get; set; }
+        public double? RequestedTimeLength { get; set; }
     }
 }

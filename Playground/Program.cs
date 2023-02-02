@@ -1,8 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
-using Melanchall.DryWetMidi.Multimedia;
-using Melanchall.DryWetMidi.Tools;
+using MusicInterface;
 
 Console.WriteLine("Hello, World!");
 
@@ -19,15 +18,15 @@ using var playback2 = mergedMidi.GetPlayback(outputDevice);
 playback2.Play();
 */
 //var midi = MidiFile.Read(@"H:\Pobrane\AE_fin_dest.mid");
-var midi = MidiFile.Read(@"C:\Repos\EmotionBox\dataset\maestro-v3.0.0\2018\MIDI-Unprocessed_Chamber6_MID--AUDIO_20_R3_2018_wav--1.midi");
+//var midi = MidiFile.Read(@"C:\Repos\EmotionBox\dataset\maestro-v3.0.0\2018\MIDI-Unprocessed_Chamber6_MID--AUDIO_20_R3_2018_wav--1.midi");
 
-var trackList = midi.GetTrackChunks().ToList();
+//var trackList = midi.GetTrackChunks().ToList();
 //for (int i = 2; i < trackList.Count; i++)
 //	trackList[1].AddObjects(trackList[i].GetTimedEvents());
 
 //midi.Chunks.Clear();
 //midi.Chunks.Add(trackList[1]);
-
+/*
 var setTempos = trackList
 	.SelectMany(x => x.Events.OfType<SetTempoEvent>())
 	.ToArray();
@@ -42,6 +41,10 @@ using var outputDevice = OutputDevice.GetByName("VirtualMIDISynth #1") ?? Output
 using var playback = midi.GetPlayback(outputDevice);
 playback.Play();
 
+*/
+
+var ee = Vector.NormalizedNormalDistribution(6, 0, 1.5);
+Console.WriteLine(ee);
 
 MidiFile Merge(IEnumerable<MidiFile> midis)
 {

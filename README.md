@@ -1,6 +1,8 @@
 # musiclivegeneratorcsharp
 Tools created while working on the master's thesis: ***Automatic music generation methods for video games***
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 
 ## ***MusicInterface*** - library in .NET Standard 2.0

@@ -5,6 +5,11 @@ using Splitter;
 using System.Threading.Tasks.Dataflow;
 
 
+if (Data.InputDirectory == null)
+    throw new ArgumentNullException(nameof(Data.InputDirectory));
+if (Data.OutputDirectory == null)
+    throw new ArgumentNullException(nameof(Data.OutputDirectory));
+
 if (!Directory.Exists(Data.OutputDirectory))
 {
     Directory.CreateDirectory(Data.OutputDirectory);
@@ -121,7 +126,7 @@ static IEnumerable<MidiWithId> SetVolumeToMax(MidiWithId midiWithId)
 {
     try
     {
-        //midiWithId.Midi.SetVolumeTo(127);
+        midiWithId.Midi.SetVolumeTo(127);
         return new[] { midiWithId };
     }
     catch (Exception e)
